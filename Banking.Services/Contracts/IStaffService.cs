@@ -4,8 +4,9 @@ namespace Banking.Services.Contracts;
 
 public interface IStaffService
 {
-    Staff AddStaff(Guid bankId, Staff staff);
-    IEnumerable<Staff>? GetAllStaff(Guid bankId);
+    Staff AddStaff(Bank bank, Staff staff);
+    IEnumerable<Staff> GetAllStaff();
+    IEnumerable<Staff> GetAllStaff(Bank bank);
     Staff? GetStaff(Guid staffId);
     Staff UpdateStaff(Staff staff);
 }

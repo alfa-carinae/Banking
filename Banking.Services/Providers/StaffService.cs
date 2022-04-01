@@ -14,17 +14,21 @@ public class StaffService : IStaffService
         _bankService = bankService;
     }
 
-    public Staff AddStaff(Guid bankId, Staff staff)
+    public Staff AddStaff(Bank bank, Staff staff)
     {
-        Bank bank = _bankService.GetBank(bankId);
         bank.Staff.Add(staff);
         _context.SaveChanges();
         return staff;
     }
 
-    public IEnumerable<Staff>? GetAllStaff(Guid bankId)
+    public IEnumerable<Staff> GetAllStaff()
     {
-        return _bankService.GetBank(bankId).Staff;
+        return _context.Staff;
+    }
+
+    public IEnumerable<Staff> GetAllStaff(Bank bank)
+    {
+        return bank.Staff;
     }
 
     public Staff? GetStaff(Guid StaffId)

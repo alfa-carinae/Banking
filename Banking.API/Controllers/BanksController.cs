@@ -2,57 +2,73 @@
 using Banking.Services.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+namespace Banking.API.Controllers;
 
-namespace Banking.API.Controllers
+[Route("api/[controller]/[action]")]
+[ApiController]
+public class BanksController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class BanksController : ControllerBase
+    private readonly IBankService bankService;
+
+    public BanksController(IBankService bankService)
     {
-        private readonly IBankService bankService;
+        this.bankService = bankService;
+    }
 
-        public BanksController(IBankService bankService)
-        {
-            this.bankService = bankService;
-        }
+    [HttpGet]
+    public IActionResult GetBanks()
+    {
+        return Ok(bankService.GetBanks());
+    }
 
-        // GET: api/<BanksController>
-        [HttpGet]
-        public IEnumerable<Bank> Get()
+    [HttpGet("{id}")]
+    public IActionResult GetBank(string id)
+    {
+        Guid.TryParse(id, out var bankId);
+        if (bankId == Guid.Empty)
         {
-            return bankService.GetBanks();
+            return BadRequest();
         }
+        var bank = bankService.GetBank(bankId);
+        if (bank == null)
+        {
+            return BadRequest();
+        }
+        return Ok(bank);
+    }
 
-        // GET api/<BanksController>/5
-        [HttpGet("{id}")]
-        public IActionResult Get(string id)
-        {
-            Guid.TryParse(id, out var bankId);
-            if (bankId == Guid.Empty)
-            {
-                return BadRequest();
-            }
-            var bank = bankService.GetBank(bankId);
-            if (bank == null)
-            {
-                return BadRequest();
-            }
-            return Ok(bank);
-        }
+    [HttpPost]
+    public void AddBank([FromBody] Bank bank)
+    {
+        bankService.AddBank(bank);
+    }
 
-        // POST api/<BanksController>
-        [HttpPost]
-        public void Post([FromBody] Bank bank)
+    [HttpPost("{id}")]
+    public IActionResult UpdateBank(string id, [FromBody] Bank bank)
+    {
+        Guid.TryParse(id, out var bankId);
+        if (bankId == Guid.Empty)
         {
-            bankService.AddBank(bank);
+            return BadRequest();
         }
+        var bnk = bankService.GetBank(bankId);
+        if (bnk == null)
+        {
+            return BadRequest();
+        }
+        bnk.Name = bank.Name;
+        bnk.BranchName = bank.BranchName;
+        bnk.Address = bank.Address;
+        bnk.City = bank.City;
+        bnk.State = bank.State;
+        bnk.Phone = bank.Phone;
+        bankService.UpdateBank(bnk);
+        return Ok();
+    }
 
-        // DELETE api/<BanksController>/5
-        [HttpDelete("{id}")]
-        public void Delete(Bank bank)
-        {
-            //
-        }
+    [HttpDelete("{id}")]
+    public void Delete(Bank bank)
+    {
+        //
     }
 }

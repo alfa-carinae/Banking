@@ -4,7 +4,7 @@ namespace Banking.Services.Contracts;
 
 public interface IAccountService
 {
-    Account AddAccount(Guid customerId, Account account);
+    Account AddAccount(Customer customer, Account account);
     Account? GetAccount(Guid accountId);
     IEnumerable<Account> GetAllAccounts();
     IEnumerable<Account> GetAllAccounts(Customer customer);

@@ -7,10 +7,12 @@ namespace Banking.CLI.Actions;
 public class RootActions
 {
     private readonly IStaffService staffService;
+    private readonly IBankService bankService;
 
-    public RootActions(IStaffService staffService)
+    public RootActions(IStaffService staffService, IBankService bankService)
     {
         this.staffService = staffService;
+        this.bankService = bankService;
     }
     public void Parse(Guid bankId, string choice)
     {
@@ -32,6 +34,12 @@ public class RootActions
     }
     public Guid CreateAdministrator(Guid bankId)
     {
+        var bank = bankService.GetBank(bankId);
+        if (bank == null)
+        {
+            AnsiConsole.MarkupLine("Invalid bank ID.");
+            return Guid.Empty;
+        }
         AnsiConsole.MarkupLine("Please provide the administrator details.");
         Staff admin = new()
         {
@@ -42,7 +50,7 @@ public class RootActions
             State = AnsiConsole.Ask<string>("Enter the administrator's state:"),
             Clearance = DataAccess.Enums.Clearance.Base
         };
-        var adminId = staffService.AddStaff(bankId, admin).Id;
+        var adminId = staffService.AddStaff(bank, admin).Id;
         AnsiConsole.MarkupLine($"Administrator ID is {adminId}.");
 
         return adminId;

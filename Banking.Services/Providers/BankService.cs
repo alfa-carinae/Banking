@@ -1,6 +1,7 @@
 ﻿using Banking.DataAccess;
 using Banking.DataAccess.Models;
 using Banking.Services.Contracts;
+using Banking.Services.Exceptions;
 
 namespace Banking.Services.Providers;
 
@@ -8,7 +9,10 @@ public class BankService : IBankService
 {
     private readonly BankingContext _context;
     public BankService(BankingContext context) => _context = context;
-    public Bank GetBank(Guid bankId) => _context.Banks.Single(bank => bank.Id == bankId);
+    public Bank? GetBank(Guid bankId)
+    {
+        return _context.Banks.SingleOrDefault(bank => bank.Id == bankId);
+    }
     public IEnumerable<Bank> GetBanks() => _context.Banks;
     public Bank AddBank(Bank bank)
     {

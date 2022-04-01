@@ -43,6 +43,12 @@ public class AdministratorActions
     }
     public Guid CreateStaff(Guid bankId)
     {
+        var bank = bankService.GetBank(bankId);
+        if (bank == null)
+        {
+            AnsiConsole.MarkupLine("Invalid bank ID.");
+            return Guid.Empty;
+        }
         AnsiConsole.MarkupLine("Please provide the staff details.");
         Staff staff = new()
         {
@@ -53,7 +59,7 @@ public class AdministratorActions
             State = AnsiConsole.Ask<string>("Enter the staff's state:"),
             Clearance = DataAccess.Enums.Clearance.Base
         };
-        var staffId = staffService.AddStaff(bankId, staff).Id;
+        var staffId = staffService.AddStaff(bank, staff).Id;
         AnsiConsole.MarkupLine($"Staff ID is {staffId}.");
 
         return staffId;

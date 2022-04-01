@@ -5,7 +5,7 @@ namespace Banking.Services.Contracts;
 public interface IBankService
 {
     Bank AddBank(Bank bank);
-    Bank GetBank(Guid bankId);
+    Bank? GetBank(Guid bankId);
     IEnumerable<Bank> GetBanks();
     Bank UpdateBank(Bank bank);
 }

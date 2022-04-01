@@ -18,9 +18,8 @@ public class AccountService : IAccountService
     public Account? GetAccount(Guid accountId) => _context.Accounts.SingleOrDefault(account => account.Id == accountId);
     public IEnumerable<Account> GetAllAccounts() => _context.Accounts;
     public IEnumerable<Account> GetAllAccounts(Customer customer) => customer.Accounts;
-    public Account AddAccount(Guid customerId, Account account)
+    public Account AddAccount(Customer customer, Account account)
     {
-        Customer customer = _context.Customers.Single(customer => customer.Id == customerId);
         customer.Accounts.Add(account);
         _context.SaveChanges();
         return account;

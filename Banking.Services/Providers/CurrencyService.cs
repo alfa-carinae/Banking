@@ -1,6 +1,4 @@
-﻿#nullable disable
-using Banking;
-using Banking.DataAccess;
+﻿using Banking.DataAccess;
 using Banking.DataAccess.Models;
 using Banking.Services.Contracts;
 
@@ -17,7 +15,7 @@ public class CurrencyService : ICurrencyService
         return currency;
     }
     public IEnumerable<Currency> GetCurrencies() => _context.Currencies;
-    public Currency GetCurrency(string currencyCode) => _context.Currencies.FirstOrDefault(c => c.Code == currencyCode);
+    public Currency? GetCurrency(string currencyCode) => _context.Currencies.FirstOrDefault(c => c.Code == currencyCode);
     public Currency UpdateCurrency(Currency currency)
     {
         _context.Currencies.Attach(currency);

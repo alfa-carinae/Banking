@@ -11,16 +11,20 @@ public class StaffActions
     private readonly IAccountService accountService;
     private readonly ITransactionService transactionService;
     private readonly ICurrencyService currencyService;
+    private readonly IBankService bankService;
+
     public StaffActions(
         ICustomerService customerService,
         IAccountService accountService,
         ITransactionService transactionService,
-        ICurrencyService currencyService)
+        ICurrencyService currencyService,
+        IBankService bankService)
     {
         this.customerService = customerService;
         this.accountService = accountService;
         this.transactionService = transactionService;
         this.currencyService = currencyService;
+        this.bankService = bankService;
     }
     public void Parse(Guid bankId, string choice)
     {
@@ -57,6 +61,12 @@ public class StaffActions
     }
     public Guid CreateCustomer(Guid bankId)
     {
+        var bank = bankService.GetBank(bankId);
+        if (bank == null)
+        {
+            AnsiConsole.MarkupLine("Invalid bank ID.");
+            return Guid.Empty;
+        }
         AnsiConsole.MarkupLine("Please provide the customer details.");
         Customer customer = new()
         {
@@ -66,7 +76,7 @@ public class StaffActions
             City = AnsiConsole.Ask<string>("Enter the customer's city:"),
             State = AnsiConsole.Ask<string>("Enter the customer's state:")
         };
-        var customerId = customerService.AddCustomer(bankId, customer).Id;
+        var customerId = customerService.AddCustomer(bank, customer).Id;
         AnsiConsole.MarkupLine($"Customer ID is {customerId}.");
 
         return customerId;
@@ -93,11 +103,17 @@ public class StaffActions
     {
         if (Guid.TryParse(AnsiConsole.Ask<string>("Enter the customer's ID:"), out var customerId) == false)
         {
+            AnsiConsole.MarkupLine("Invalid ID.");
+            return Guid.Empty;
+        }
+        var customer = customerService.GetCustomer(customerId);
+        if (customer == null)
+        {
             AnsiConsole.MarkupLine("Invalid customer ID.");
             return Guid.Empty;
         }
         var accountId = accountService.AddAccount(
-            customerId, new Account() { Balance = AnsiConsole.Ask<decimal>("Enter the opening balance:") }).Id;
+            customer, new Account() { Balance = AnsiConsole.Ask<decimal>("Enter the opening balance:") }).Id;
         AnsiConsole.MarkupLine($"Customer account ID is {accountId}.");
 
         return accountId;
